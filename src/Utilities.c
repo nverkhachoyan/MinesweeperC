@@ -1,4 +1,9 @@
+#include <stdlib.h>
+#include <math.h>
+
 #include "../include/Utilities.h"
+#include "../include/Game_State.h"
+
 
 extern Game_State game_state;
 

@@ -1,10 +1,14 @@
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "../include/Game_Logic.h"
+#include "../include/Utilities.h"
 
 extern Game_State game_state;
 
 void command_new(const int rows, const int cols, const int mines)
 {
-    // free existing board memory
+    // Free existing board memory
     if (game_state.board != NULL)
     {
         for (int i = 0; i < game_state.row_count; i++)
@@ -15,7 +19,7 @@ void command_new(const int rows, const int cols, const int mines)
         game_state.board = NULL; // Set board to NULL
     }
 
-    // allocate new board memory
+    // Allocate new board memory
     game_state.board = (Cell **)malloc(sizeof(Cell *) * rows);
     if (game_state.board == NULL)
     {
@@ -23,7 +27,7 @@ void command_new(const int rows, const int cols, const int mines)
         exit(EXIT_FAILURE); // Exit if memory allocation fails
     }
 
-    // init global vars for later use
+    // Init global vars for later use
     game_state.row_count = rows;
     game_state.col_count = cols;
     game_state.win = 0; // Set to 0 for ongoing game
@@ -34,7 +38,7 @@ void command_new(const int rows, const int cols, const int mines)
         game_state.board[i] = (Cell *)malloc(sizeof(Cell) * cols);
     }
 
-    // initialize each Cell with their pos
+    // Initialize each Cell with their pos
     for (int i = 0; i < rows; i++)
     {
         for (int j = 0; j < cols; j++)
@@ -43,7 +47,7 @@ void command_new(const int rows, const int cols, const int mines)
         }
     }
 
-    // place mines sequantially starting pos 0
+    // Place mines sequantially starting pos 0
     for (int i = 0; i < mines; i++)
     {
         const int r = i / cols;
@@ -51,10 +55,10 @@ void command_new(const int rows, const int cols, const int mines)
         game_state.board[r][c].hasMine = 1;
     }
 
-    // shuffle Cells
+    // Shuffle Cells
     shuffleCells(rows, cols, mines);
 
-    // initalize adjacency counts
+    // Initalize adjacency counts
     initAdjCounts(rows, cols);
 }
 
@@ -90,43 +94,51 @@ void command_unflag(const int r, const int c)
 
 void command_uncover(const int r, const int c)
 {
-    // if invalid row and col, notify and continue
+    // If invalid row and col, notify and continue
     if (!isValidCell(r, c))
     {
         printf("Invalid index. Please try again.\n");
         return;
     }
 
-    // if hasMine Cell, game lost, return 0
+    // If hasMine Cell, game lost, return 0
     if (game_state.board[r][c].hasMine)
     {
-        // lose game
+        // Lose game
         game_state.board[r][c].covered = 0;
         game_state.win = -1;
         return;
     }
 
-    // if adjacency count greater than 0, just uncover one Cell
+    // If adjacency count greater than 0, just uncover one Cell
     if (game_state.board[r][c].adjcount > 0)
     {
         game_state.board[r][c].covered = 0;
         return;
     }
 
-    // last case, if Cell not hasMine and adjcount == 0
+    // Last case, if Cell not hasMine and adjcount == 0
     // then do a group uncover of surrounding Cells
     uncover_recursive(r, c);
 }
 
 void command_show()
 {
+    printf("%2d ", 0);
+    for (int i = 0; i < game_state.col_count; i++) {
+        printf("%2d ", i + 1);
+    }
+
+    printf("\n");
+
     for (int i = 0; i < game_state.row_count; i++)
     {
+        printf("%2d ", i + 1);
         for (int j = 0; j < game_state.col_count; j++)
         {
-            display_cell(&game_state.board[i][j]); // display individual Cell
+            display_cell(&game_state.board[i][j]); // Display individual Cell
         }
-        printf("\n"); // newline at end of each row
+        printf("\n"); // Newline at end of each row
     }
 }
 
@@ -135,7 +147,7 @@ void uncover_recursive(const int r, const int c)
     const int rowneighbors[] = {-1, -1, +0, +1, +1, +1, +0, -1};
     const int colneighbors[] = {+0, +1, +1, +1, +0, -1, -1, -1};
 
-    // check if the current Cell is valid and needs to be uncovered
+    // Check if the current Cell is valid and needs to be uncovered
     if (!isValidCell(r, c) || !game_state.board[r][c].covered || game_state.board[r][c].hasMine)
     {
         return;
@@ -143,13 +155,13 @@ void uncover_recursive(const int r, const int c)
 
     game_state.board[r][c].covered = 0;
 
-    // if the adjacency count is greater than 0, do not uncover neighbors
+    // If the adjacency count is greater than 0, do not uncover neighbors
     if (game_state.board[r][c].adjcount > 0)
     {
         return;
     }
 
-    // recursively uncover each valid neighbor
+    // Recursively uncover each valid neighbor
     for (int n = 0; n < 8; n++)
     {
         const int rn = r + rowneighbors[n];
@@ -195,7 +207,7 @@ void display_cell(const Cell *c)
     }
 }
 
-int checkWinCondition() {
+int check_win_condition() {
     for (int i = 0; i < game_state.row_count; i++) {
         for (int j = 0; j < game_state.col_count; j++) {
             if (game_state.board[i][j].hasMine && !game_state.board[i][j].flagged)

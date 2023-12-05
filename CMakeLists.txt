@@ -12,4 +12,6 @@ add_executable(Mineswooper src/main.c
         src/Input_Processing.c
         include/Constants.h
         src/Utilities.c
-        include/Utilities.h)
+        include/Utilities.h
+        include/Run_Game.h
+        src/Run_Game.c)

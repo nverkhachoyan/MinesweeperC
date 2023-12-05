@@ -1,6 +1,18 @@
 # ninja log v5
-41	75	1700893226836872314	Mineswooper	5564eae2c060fa5
-0	39	1700893226800343259	CMakeFiles/Mineswooper.dir/src/main.c.o	8aedd8a9c3822f4f
-1	45	1700892338856417082	CMakeFiles/Mineswooper.dir/src/Utilities.c.o	1306816fa617bc2d
-0	39	1700893226800824061	CMakeFiles/Mineswooper.dir/src/Input_Processing.c.o	e354545bfb743431
-0	41	1700893226803987502	CMakeFiles/Mineswooper.dir/src/Game_Logic.c.o	b228c1e660baf2dd
+40	72	1701052947635627185	Mineswooper	5564eae2c060fa5
+0	196	1701052934415136358	CMakeFiles/Mineswooper.dir/src/main.c.o	d59a92efc95b3250
+1	196	1701052934415141441	CMakeFiles/Mineswooper.dir/src/Utilities.c.o	454e8b339bb75bef
+1	195	1701052934415228192	CMakeFiles/Mineswooper.dir/src/Input_Processing.c.o	cedbc3c2473b56e
+0	39	1701052947603766848	CMakeFiles/Mineswooper.dir/src/Game_Logic.c.o	90783ae7884a7a8a
+1	280	1701053606195757899	CMakeFiles/Mineswooper.dir/src/main.c.o	d59a92efc95b3250
+1	280	1701053606195835941	CMakeFiles/Mineswooper.dir/src/Game_Logic.c.o	90783ae7884a7a8a
+2	280	1701053606195756982	CMakeFiles/Mineswooper.dir/src/Run_Game.c.o	868585e44b607c41
+280	316	1701053606233296430	Mineswooper	8f7bfc4518e0845b
+1	32	1701054189267354738	CMakeFiles/Mineswooper.dir/src/main.c.o	d59a92efc95b3250
+32	72	1701054189306091375	Mineswooper	8f7bfc4518e0845b
+1	49	1701054273461432159	CMakeFiles/Mineswooper.dir/src/Input_Processing.c.o	cedbc3c2473b56e
+49	85	1701054273497070153	Mineswooper	8f7bfc4518e0845b
+0	290	1701761168547548743	CMakeFiles/Mineswooper.dir/src/Game_Logic.c.o	90783ae7884a7a8a
+1	290	1701761168547117447	CMakeFiles/Mineswooper.dir/src/Run_Game.c.o	868585e44b607c41
+1	290	1701761168548175625	CMakeFiles/Mineswooper.dir/src/Input_Processing.c.o	cedbc3c2473b56e
+290	431	1701761168688603977	Mineswooper	8f7bfc4518e0845b
