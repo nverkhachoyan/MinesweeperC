@@ -3,16 +3,17 @@
 #include <time.h>
 
 #include "../include/Run_Game.h"
+
+#include <string.h>
+
 #include "../include/Constants.h"
 #include "../include/Input_Processing.h"
 #include "../include/Game_Logic.h"
 #include "../include/Game_State.h"
 
-extern Game_State game_state;
-
-void run_game()
+void run_game(Game_State *game_state)
 {
-    game_state.board = NULL;
+    game_state->board = NULL;
     srand(time(0));
 
     while (1)
@@ -27,17 +28,17 @@ void run_game()
         get_line(line);
         get_tokens(line, MAX_LINE_LEN, tokens, &token_count);
 
-        const int result = process_command(tokens, &token_count);
+        const int result = process_command(game_state, tokens, &token_count);
 
         // Check if game has been won
-        const int winCondition = check_win_condition();
+        const int winCondition = check_win_condition(game_state);
         if(winCondition) {
-            game_state.win = winCondition;
+            game_state->win = winCondition;
         }
-        if (game_state.win == -1) {
+        if (game_state->win == -1) {
             printf("You have lost the game!\n");
             printf("Use the new command to start a new game.\n");
-        } else if (game_state.win == 1) {
+        } else if (game_state->win == 1) {
             printf("Congratulations! You have won!\n");
             printf("Use the new command to start a new game.\n");
         }
@@ -45,5 +46,8 @@ void run_game()
         // Checking if process_command returned 0, indicating to quit
         if (result == 0)
             break;
+
+        memset(tokens, 0, sizeof(char) * token_count);
+        token_count = 0;
     }
 }

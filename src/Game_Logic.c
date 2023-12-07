@@ -4,38 +4,37 @@
 #include "../include/Game_Logic.h"
 #include "../include/Utilities.h"
 
-extern Game_State game_state;
 
-void command_new(const int rows, const int cols, const int mines)
+void command_new(Game_State *game_state, const int rows, const int cols, const int mines)
 {
     // Free existing board memory
-    if (game_state.board != NULL)
+    if (game_state->board != NULL)
     {
-        for (int i = 0; i < game_state.row_count; i++)
+        for (int i = 0; i < game_state->row_count; i++)
         {
-            free(game_state.board[i]); // Free each row
+            free(game_state->board[i]); // Free each row
         }
-        free(game_state.board); // Free the board
-        game_state.board = NULL; // Set board to NULL
+        free(game_state->board); // Free the board
+        game_state->board = NULL; // Set board to NULL
     }
 
     // Allocate new board memory
-    game_state.board = (Cell **)malloc(sizeof(Cell *) * rows);
-    if (game_state.board == NULL)
+    game_state->board = (Cell **)malloc(sizeof(Cell *) * rows);
+    if (game_state->board == NULL)
     {
         fprintf(stderr, "Error: Unable to allocate memory for game board.\n");
         exit(EXIT_FAILURE); // Exit if memory allocation fails
     }
 
     // Init global vars for later use
-    game_state.row_count = rows;
-    game_state.col_count = cols;
-    game_state.win = 0; // Set to 0 for ongoing game
+    game_state->row_count = rows;
+    game_state->col_count = cols;
+    game_state->win = 0; // Set to 0 for ongoing game
 
     // Allocate memory for board rows
     for (int i = 0; i < rows; i++)
     {
-        game_state.board[i] = (Cell *)malloc(sizeof(Cell) * cols);
+        game_state->board[i] = (Cell *)malloc(sizeof(Cell) * cols);
     }
 
     // Initialize each Cell with their pos
@@ -43,7 +42,7 @@ void command_new(const int rows, const int cols, const int mines)
     {
         for (int j = 0; j < cols; j++)
         {
-            init_cell(&game_state.board[i][j], i, j, cols);
+            init_cell(&game_state->board[i][j], i, j, cols);
         }
     }
 
@@ -52,27 +51,27 @@ void command_new(const int rows, const int cols, const int mines)
     {
         const int r = i / cols;
         const int c = i % cols;
-        game_state.board[r][c].hasMine = 1;
+        game_state->board[r][c].hasMine = 1;
     }
 
     // Shuffle Cells
-    shuffleCells(rows, cols, mines);
+    shuffleCells(game_state, rows, cols, mines);
 
     // Initalize adjacency counts
-    initAdjCounts(rows, cols);
+    initAdjCounts(game_state, rows, cols);
 }
 
-void command_flag(const int r, const int c)
+void command_flag(const Game_State *game_state,const int r, const int c)
 {
-    if (game_state.board[r][c].covered == 0)
+    if (game_state->board[r][c].covered == 0)
     {
         printf("Cell uncovered\n");
         return;
     }
 
-    if (game_state.board[r][c].flagged == 0)
+    if (game_state->board[r][c].flagged == 0)
     {
-        game_state.board[r][c].flagged = 1;
+        game_state->board[r][c].flagged = 1;
     }
     else
     {
@@ -80,11 +79,11 @@ void command_flag(const int r, const int c)
     }
 }
 
-void command_unflag(const int r, const int c)
+void command_unflag(const Game_State *game_state, const int r, const int c)
 {
-    if (game_state.board[r][c].flagged == 1)
+    if (game_state->board[r][c].flagged == 1)
     {
-        game_state.board[r][c].flagged = 0;
+        game_state->board[r][c].flagged = 0;
     }
     else
     {
@@ -92,71 +91,71 @@ void command_unflag(const int r, const int c)
     }
 }
 
-void command_uncover(const int r, const int c)
+void command_uncover(Game_State *game_state, const int r, const int c)
 {
     // If invalid row and col, notify and continue
-    if (!isValidCell(r, c))
+    if (!isValidCell(game_state, r, c))
     {
         printf("Invalid index. Please try again.\n");
         return;
     }
 
     // If hasMine Cell, game lost, return 0
-    if (game_state.board[r][c].hasMine)
+    if (game_state->board[r][c].hasMine)
     {
         // Lose game
-        game_state.board[r][c].covered = 0;
-        game_state.win = -1;
+        game_state->board[r][c].covered = 0;
+        game_state->win = -1;
         return;
     }
 
     // If adjacency count greater than 0, just uncover one Cell
-    if (game_state.board[r][c].adjcount > 0)
+    if (game_state->board[r][c].adjcount > 0)
     {
-        game_state.board[r][c].covered = 0;
+        game_state->board[r][c].covered = 0;
         return;
     }
 
     // Last case, if Cell not hasMine and adjcount == 0
     // then do a group uncover of surrounding Cells
-    uncover_recursive(r, c);
+    uncover_recursive(game_state, r, c);
 }
 
-void command_show()
+void command_show(const Game_State *game_state)
 {
     printf("%2d ", 0);
-    for (int i = 0; i < game_state.col_count; i++) {
+    for (int i = 0; i < game_state->col_count; i++) {
         printf("%2d ", i + 1);
     }
 
     printf("\n");
 
-    for (int i = 0; i < game_state.row_count; i++)
+    for (int i = 0; i < game_state->row_count; i++)
     {
         printf("%2d ", i + 1);
-        for (int j = 0; j < game_state.col_count; j++)
+        for (int j = 0; j < game_state->col_count; j++)
         {
-            display_cell(&game_state.board[i][j]); // Display individual Cell
+            display_cell(&game_state->board[i][j]); // Display individual Cell
         }
         printf("\n"); // Newline at end of each row
     }
 }
 
-void uncover_recursive(const int r, const int c)
+void uncover_recursive(const Game_State *game_state, const int r, const int c)
 {
     const int rowneighbors[] = {-1, -1, +0, +1, +1, +1, +0, -1};
     const int colneighbors[] = {+0, +1, +1, +1, +0, -1, -1, -1};
 
     // Check if the current Cell is valid and needs to be uncovered
-    if (!isValidCell(r, c) || !game_state.board[r][c].covered || game_state.board[r][c].hasMine)
+    if (!isValidCell(game_state, r, c) || !game_state->board[r][c].covered || game_state->board[r][c].hasMine)
     {
         return;
     }
 
-    game_state.board[r][c].covered = 0;
+    game_state->board[r][c].covered = 0;
 
     // If the adjacency count is greater than 0, do not uncover neighbors
-    if (game_state.board[r][c].adjcount > 0)
+    if (game_state->board[r][c].adjcount > 0)
     {
         return;
     }
@@ -167,11 +166,11 @@ void uncover_recursive(const int r, const int c)
         const int rn = r + rowneighbors[n];
         const int cn = c + colneighbors[n];
 
-        if (isValidCell(rn, cn))
+        if (isValidCell(game_state, rn, cn))
         {
-            if (game_state.board[rn][cn].covered && !game_state.board[rn][cn].hasMine)
+            if (game_state->board[rn][cn].covered && !game_state->board[rn][cn].hasMine)
             {
-                uncover_recursive(rn, cn);
+                uncover_recursive(game_state, rn, cn);
             }
         }
     }
@@ -207,12 +206,13 @@ void display_cell(const Cell *c)
     }
 }
 
-int check_win_condition() {
-    for (int i = 0; i < game_state.row_count; i++) {
-        for (int j = 0; j < game_state.col_count; j++) {
-            if (game_state.board[i][j].hasMine && !game_state.board[i][j].flagged)
+int check_win_condition(const Game_State *game_state) {
+
+    for (int i = 0; i < game_state->row_count; i++) {
+        for (int j = 0; j < game_state->col_count; j++) {
+            if (game_state->board[i][j].hasMine && !game_state->board[i][j].flagged)
                 return 0;
-            if (!game_state.board[i][j].hasMine && game_state.board[i][j].covered)
+            if (!game_state->board[i][j].hasMine && game_state->board[i][j].covered)
                 return 0;
         }
     }

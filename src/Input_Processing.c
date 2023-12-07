@@ -7,8 +7,6 @@
 #include "../include/Game_Logic.h"
 
 
-extern Game_State game_state;
-
 void get_line(char line[])
 {
     fgets(line, MAX_LINE_LEN, stdin);
@@ -39,27 +37,22 @@ void get_tokens(char line[], int max_line_len, char tokens[][20], int *token_cou
 int is_command_legal(char tokens[][20], const int *token_count) {
     const char *legal_commands[] = { "new", "show", "quit", "uncover", "flag", "unflag" };
     const int legal_command_args[] = {3, 0, 0, 2, 2, 2};
-    int isLegal = 0;
-    int cmd_legal_index = 0;
 
     // Check if command is legal
     for (int i = 0; i < LEGALCMDCOUNT; i++) {
         if(strcmp(tokens[0], legal_commands[i]) == 0) {
-            cmd_legal_index = i; // Record index i if command is legal
-            isLegal = 1;
+                // Check if arguments given to command are legal
+            if (legal_command_args[i] == *token_count - 1) {
+                return 1; // Command is legal
+            }
             break;
         }
     }
 
-    // Check if arguments given to command are legal
-    if (isLegal && legal_command_args[cmd_legal_index] == *token_count - 1)
-        return 1; // Command is legal, return 1
-
-    // Command not legal, return 0
-    return 0;
+    return 0; // Command not legal
 }
 
-int process_command(char tokens[][20], const int *token_count)
+int process_command(Game_State *game_state, char tokens[][20], const int *token_count)
 {
     const char *command = tokens[0];
     const int arg1 = atoi(tokens[1]);
@@ -75,26 +68,27 @@ int process_command(char tokens[][20], const int *token_count)
 
     if (strcmp(command, "new") == 0)
     {
+        command_new(game_state, arg1, arg2, arg3);
         printf("New game created.\n");
-        command_new(arg1, arg2, arg3);
+        command_show(game_state);
     }
     else if (strcmp(command, "show") == 0)
     {
-        command_show();
+        command_show(game_state);
     }
     else if (strcmp(command, "uncover") == 0)
     {
-        if (game_state.win == 0) {
-            command_uncover(arg1 - 1, arg2 - 1);
+        if (game_state->win == 0) {
+            command_uncover(game_state, arg1 - 1, arg2 - 1);
         }
     }
     else if (strcmp(command, "flag") == 0)
     {
-        command_flag(arg1 - 1, arg2 - 1);
+        command_flag(game_state, arg1 - 1, arg2 - 1);
     }
     else if (strcmp(command, "unflag") == 0)
     {
-        command_unflag(arg1 - 1, arg2 - 1);
+        command_unflag(game_state, arg1 - 1, arg2 - 1);
     }
     else if (strcmp(command, "quit") == 0)
     {

@@ -14,14 +14,15 @@
 #include "../include/Game_State.h"
 #include "../include/Run_Game.h"
 
-// Global variable to hold the state of the game
-Game_State game_state;
-
 int main()
 {
-    run_game();
+    Game_State game_state;
+    run_game(&game_state);
+
     return 0;
 }
+
+
 
 
 
