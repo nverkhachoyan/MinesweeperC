@@ -18,13 +18,10 @@ void get_line(char line[])
 
 void get_tokens(char line[], int max_line_len, char tokens[][20], int *token_count)
 {
-
     char line_copy[max_line_len];
-
     strcpy(line_copy, line);
 
     const char *p = strtok(line_copy, " ");
-
     while (p != NULL)
     {
         strcpy(tokens[*token_count], p);
@@ -39,7 +36,7 @@ int is_command_legal(char tokens[][20], const int *token_count) {
     const int legal_command_args[] = {3, 0, 0, 2, 2, 2};
 
     // Check if command is legal
-    for (int i = 0; i < LEGALCMDCOUNT; i++) {
+    for (int i = 0; i < LEGAL_CMD_COUNT; i++) {
         if(strcmp(tokens[0], legal_commands[i]) == 0) {
                 // Check if arguments given to command are legal
             if (legal_command_args[i] == *token_count - 1) {
@@ -63,7 +60,7 @@ int process_command(Game_State *game_state, char tokens[][20], const int *token_
     if(!is_command_legal(tokens, token_count))
     {
         printf("Invalid commands or arguments.\n");
-        return 1;
+        return 0;
     }
 
     if (strcmp(command, "new") == 0)
@@ -93,7 +90,7 @@ int process_command(Game_State *game_state, char tokens[][20], const int *token_
     else if (strcmp(command, "quit") == 0)
     {
         printf("Quitting.\n");
-        return 0;
+        return -1;
     }
     else
     {

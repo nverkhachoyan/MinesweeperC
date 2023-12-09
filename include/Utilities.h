@@ -3,9 +3,13 @@
 
 #include "../include/Game_State.h"
 
+// Get a random integer from 0 to range
 int get_random(int range);
-int isValidCell(const Game_State *game_state, int r, int c);
-void initAdjCounts(const Game_State *game_state, int rows, int cols);
-void shuffleCells(const Game_State *game_state, int rows, int cols, int mines);
+
+// Allocate memory for board given rows and columns
+void allocate_board_memory(Game_State *game_state, int rows, int cols);
+
+// Free board memory
+void free_board_memory(Game_State *game_state);
 
 #endif //UTILITIES_H
